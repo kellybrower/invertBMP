@@ -19,23 +19,27 @@ pixeloffset :: BMPBytes -> Int
 pixeloffset b = fromIntegral $ B.index b 10
 
 -- Assumes that the image provided is BMP and 24 bits per pixel
-invert :: ImgPath -> IO ()
+invert :: ImgPath -> IO (Either String ())
 invert imgPath = do
   imgBytes <- B.readFile imgPath
-  if imgIsBMP imgPath && bbpIs24 imgBytes
-    then do
-      let po = pixeloffset imgBytes
-      let bmpHeaders = B.take po imgBytes
-      let pixels = B.drop po imgBytes
-      let invertedPixels = B.map (255 -) pixels
-      let invertedBMP = bmpHeaders <> invertedPixels
-      B.writeFile ("Inverted_" ++ imgPath) invertedBMP
-    else error "This is not a 24 bbp BMP file."
+  if not (imgIsBMP imgPath)
+    then return $ Left "File is not a BMP image."
+    else
+      if not (bbpIs24 imgBytes)
+        then return $ Left "Image is not 24 bbp."
+        else do
+          let po = pixeloffset imgBytes
+          let bmpHeaders = B.take po imgBytes
+          let pixels = B.drop po imgBytes
+          let invertedPixels = B.map (255 -) pixels
+          let invertedBMP = bmpHeaders <> invertedPixels
+          B.writeFile ("Inverted_" ++ imgPath) invertedBMP
+          return $ Right ()
 
 processImages :: [String] -> IO ()
 processImages [] = return () -- If there are no images, do nothing.
 processImages (x : xs) = do
-  invert x
+  _ <- invert x
   putStrLn $ "Inverted image saved for: " ++ x
   processImages xs
 
