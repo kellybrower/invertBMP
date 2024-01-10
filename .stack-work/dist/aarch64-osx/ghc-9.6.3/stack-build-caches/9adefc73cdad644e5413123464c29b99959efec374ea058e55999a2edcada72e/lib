@@ -1,0 +1,16 @@
+/Users/kellybrower/.stack/programs/aarch64-osx/ghc-9.6.3/lib/ghc-9.6.3/lib/aarch64-osx-ghc-9.6.3/rts-1.0.2/include/ghcversion.h:
+  hash: 9ac4cd6dcf20b31fc6e9eefbda1d924d33786bc197a79b0e6947ed7129581019
+? /Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/.stack-work/dist/aarch64-osx/ghc-9.6.3/build/autogen/Paths_invertBMP.hs
+: hash: 125578a740a9bfe45e529629eed51028c3728e074878623aac8b3f4645970c87
+? /Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/.stack-work/dist/aarch64-osx/ghc-9.6.3/build/autogen/cabal_macros.h
+: hash: 519ea8aa33c63f21d0ad4e6da489be524a66818ea1e6205503e2e8fd729624c7
+/Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/CHANGELOG.md:
+  hash: 70c2856fe93ed7cd8fa3ab49dca07c2452309fe61f6832a97e64a46f8ff02bea
+/Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/README.md:
+  hash: 5a5159e9c437b17cebab4cdf103afb62b1450e38a2ff7b672aa2ac7b75c6d884
+/Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/invertBMP.cabal:
+  hash: 4722ac8474dd380a833993e3eaf2c4cea4c888cb9bbace1284d3f1f92f576342
+/Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/package.yaml:
+  hash: 53f6b7fc78915a37a416cc1f52f38084a3b3a4a15dab16b49b2ac92183b38ce1
+/Users/kellybrower/mystuff/Haskell/playground/Invert/invertBMP/src/Lib.hs:
+  hash: 11d6d255cb397fa45980eb516ea685146565d9de2108c4eea356ea41db8364be
