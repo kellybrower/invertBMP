@@ -2,52 +2,57 @@ module Main (main) where
 
 import qualified Data.ByteString as B
 import System.Environment (getArgs)
-import System.FilePath.Posix (takeExtension)
+import System.FilePath (takeExtension)
+import Control.Monad (forM_)
+import System.Exit (exitFailure)
 
 type ImgPath = String
-
 type BMPBytes = B.ByteString
 
--- Helper Functions --
-imgIsBMP :: ImgPath -> Bool
-imgIsBMP s = takeExtension s == ".bmp"
+-- | Check if the file has a .bmp extension.
+isBMP :: ImgPath -> Bool
+isBMP path = takeExtension path == ".bmp"
 
-bbpIs24 :: BMPBytes -> Bool
-bbpIs24 b = B.index b 28 == 24
+-- | Check if the BMP image is 24 bits per pixel.
+is24BBP :: BMPBytes -> Bool
+is24BBP bytes = B.index bytes 28 == 24
 
-pixeloffset :: BMPBytes -> Int
-pixeloffset b = fromIntegral $ B.index b 10
+-- | Retrieve the pixel offset from the BMP header.
+pixelOffset :: BMPBytes -> Int
+pixelOffset bytes = fromIntegral $ B.index bytes 10
 
--- Assumes that the image provided is BMP and 24 bits per pixel
-invert :: ImgPath -> IO (Either String ())
-invert imgPath = do
-  imgBytes <- B.readFile imgPath
-  if not (imgIsBMP imgPath)
-    then return $ Left "File is not a BMP image."
-    else
-      if not (bbpIs24 imgBytes)
+-- | Invert a BMP image assuming it is 24 bits per pixel.
+invertBMP :: ImgPath -> IO (Either String ())
+invertBMP path
+  | not (isBMP path) = return $ Left "File is not a BMP image."
+  | otherwise = do
+      bytes <- B.readFile path
+      if not (is24BBP bytes)
         then return $ Left "Image is not 24 bbp."
         else do
-          let po = pixeloffset imgBytes
-          let bmpHeaders = B.take po imgBytes
-          let pixels = B.drop po imgBytes
-          let invertedPixels = B.map (255 -) pixels
-          let invertedBMP = bmpHeaders <> invertedPixels
-          B.writeFile ("Inverted_" ++ imgPath) invertedBMP
+          let offset = pixelOffset bytes
+              -- Use B.splitAt to separate header and pixel data in one go.
+              (header, pixels) = B.splitAt offset bytes
+              invertedPixels = B.map (255 -) pixels
+              invertedBMP = header <> invertedPixels
+          B.writeFile ("Inverted_" ++ path) invertedBMP
           return $ Right ()
 
-processImages :: [String] -> IO ()
-processImages [] = return () -- If there are no images, do nothing.
-processImages (x : xs) = do
-  _ <- invert x
-  putStrLn $ "Inverted image saved for: " ++ x
-  processImages xs
+-- | Process a list of image paths.
+processImages :: [ImgPath] -> IO ()
+processImages [] = putStrLn "No images provided."
+processImages paths = forM_ paths $ \path -> do
+  result <- invertBMP path
+  case result of
+    Left err -> putStrLn $ "Error processing " ++ path ++ ": " ++ err
+    Right () -> putStrLn $ "Inverted image saved for: " ++ path
 
 main :: IO ()
 main = do
   args <- getArgs
   if null args
     then do
-      putStrLn "No image file specified."
-      putStrLn "Usage: ./Main <image_file.bmp>"
+      putStrLn "Usage: ./Main <image_file.bmp> [more images...]"
+      exitFailure
     else processImages args
+
